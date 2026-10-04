@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinAI | Autonomous Financial Copilot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased flex flex-col">
+
+  <!-- Navbar -->
+  <header class="border-b border-slate-800 bg-slate-900/60 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+          <i class="fa-solid fa-chart-line text-lg"></i>
+        </div>
+        <div>
+          <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">FinAI</span>
+          <span class="text-xs px-2 py-0.5 ml-2 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Day 23 • Analytics Live</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-4 text-xs font-mono text-slate-400">
+        <span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> SQL Analytics Engine</span>
+        <a href="/docs" target="_blank" class="px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 hover:text-white transition text-slate-300">Swagger Docs</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Left Column: Forms -->
+    <div class="space-y-6 lg:col-span-1">
+      
+      <!-- Transaction Form -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-base font-semibold text-white flex items-center gap-2">
+            <i class="fa-solid fa-receipt text-indigo-400"></i> Log Transaction
+          </h2>
+          <span class="text-xs text-slate-500">POST /transactions</span>
+        </div>
+
+        <form id="txnForm" class="space-y-4 text-sm">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Account ID</label>
+            <input type="number" id="txnAccountId" value="1" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Amount (₹)</label>
+            <input type="number" step="0.01" id="txnAmount" placeholder="e.g. 450.00" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Merchant</label>
+            <input type="text" id="txnMerchant" placeholder="e.g. Zomato, Amazon, Uber" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Category</label>
+            <select id="txnCategory" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500">
+              <option value="Food">Food</option>
+              <option value="Groceries">Groceries</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Transport">Transport</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Rent">Rent</option>
+              <option value="Entertainment">Entertainment</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Transaction Date</label>
+            <input type="date" id="txnDate" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
+          </div>
+          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 rounded-lg transition shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-plus text-xs"></i> Record Expense
+          </button>
+        </form>
+      </div>
+
+      <!-- Budget Form -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-base font-semibold text-white flex items-center gap-2">
+            <i class="fa-solid fa-bullseye text-violet-400"></i> Set Category Budget
+          </h2>
+          <span class="text-xs text-slate-500">POST /budgets</span>
+        </div>
+
+        <form id="budgetForm" class="space-y-4 text-sm">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Account ID</label>
+            <input type="number" id="budAccountId" value="1" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Category</label>
+            <select id="budCategory" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500">
+              <option value="Food">Food</option>
+              <option value="Groceries">Groceries</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Transport">Transport</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Rent">Rent</option>
+              <option value="Entertainment">Entertainment</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Monthly Limit (₹)</label>
+            <input type="number" step="0.01" id="budLimit" placeholder="e.g. 12000.00" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Month (YYYY-MM)</label>
+            <input type="text" id="budMonthYear" placeholder="2026-10" pattern="^\d{4}-(0[1-9]|1[0-2])$" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
+          </div>
+          <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-medium py-2 rounded-lg transition border border-slate-700 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-check text-xs"></i> Set Budget Target
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Live Data Feed & Visual Overview -->
+    <div class="space-y-6 lg:col-span-2">
+      
+      <!-- Metrics Stat Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <p class="text-xs text-slate-400">Total Outflow</p>
+          <p id="statTotalSpend" class="text-2xl font-bold text-white mt-1">₹0.00</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <p class="text-xs text-slate-400">Avg Transaction Size</p>
+          <p id="statAvgSpend" class="text-2xl font-bold text-emerald-400 mt-1">₹0.00</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <p class="text-xs text-slate-400">Total Count</p>
+          <p id="statTxnCount" class="text-2xl font-bold text-indigo-400 mt-1">0</p>
+        </div>
+      </div>
+
+      <!-- SQL Analytics Section: Categories & Top Merchants -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        
+        <!-- Category Spend Progress Bars -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+              <i class="fa-solid fa-chart-pie text-indigo-400"></i> Category Outflow
+            </h3>
+            <span class="text-[11px] font-mono text-slate-500">SQL GROUP BY</span>
+          </div>
+          <div id="categoryBars" class="space-y-3">
+            <p class="text-xs text-slate-500 italic py-2">No category data yet.</p>
+          </div>
+        </div>
+
+        <!-- Top Merchants List -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+              <i class="fa-solid fa-store text-violet-400"></i> Top Merchants
+            </h3>
+            <span class="text-[11px] font-mono text-slate-500">SQL ORDER BY</span>
+          </div>
+          <div id="merchantList" class="space-y-2">
+            <p class="text-xs text-slate-500 italic py-2">No merchant data yet.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Active Monthly Budgets -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-base font-semibold text-white flex items-center gap-2">
+            <i class="fa-solid fa-bullseye text-violet-400"></i> Active Category Budgets
+          </h2>
+          <button onclick="loadBudgets()" class="text-xs text-indigo-400 hover:text-indigo-300 transition">
+            <i class="fa-solid fa-arrows-rotate mr-1"></i> Refresh
+          </button>
+        </div>
+        <div id="budgetGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+          <div class="text-slate-500 text-xs italic py-2">No budgets configured yet.</div>
+        </div>
+      </div>
+
+      <!-- Live Transactions Feed -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-base font-semibold text-white flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left text-indigo-400"></i> Recent Ledger Records
+          </h2>
+          <button onclick="refreshAll()" class="text-xs text-indigo-400 hover:text-indigo-300 transition">
+            <i class="fa-solid fa-arrows-rotate mr-1"></i> Refresh All
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400">
+                <th class="py-2.5 font-medium">ID</th>
+                <th class="py-2.5 font-medium">Merchant</th>
+                <th class="py-2.5 font-medium">Category</th>
+                <th class="py-2.5 font-medium">Date</th>
+                <th class="py-2.5 font-medium text-right">Amount (₹)</th>
+              </tr>
+            </thead>
+            <tbody id="txnTableBody" class="divide-y divide-slate-800/60 font-mono text-slate-300">
+              <tr>
+                <td colspan="5" class="py-4 text-center text-slate-500 font-sans">No transactions recorded yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('txnDate').value = new Date().toISOString().split('T')[0];
+
+    async function loadAnalytics() {
+      try {
+        const [sumRes, catRes, merRes] = await Promise.all([
+          fetch('/analytics/summary'),
+          fetch('/analytics/categories'),
+          fetch('/analytics/merchants')
+        ]);
+
+        const summary = await sumRes.json();
+        const categories = await catRes.json();
+        const merchants = await merRes.json();
+
+        // Stat cards
+        document.getElementById('statTotalSpend').innerText = `₹${summary.total_spent.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+        document.getElementById('statAvgSpend').innerText = `₹${summary.average_transaction.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+        document.getElementById('statTxnCount').innerText = summary.transaction_count;
+
+        // Category breakdown progress bars
+        const catContainer = document.getElementById('categoryBars');
+        if (categories.length === 0) {
+          catContainer.innerHTML = '<p class="text-xs text-slate-500 italic py-2">No category data yet.</p>';
+        } else {
+          catContainer.innerHTML = categories.map(c => `
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="font-medium text-slate-300">${c.category}</span>
+                <span class="font-mono text-slate-400">₹${c.total_spent.toLocaleString('en-IN')} (${c.percentage}%)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div class="bg-indigo-500 h-1.5 rounded-full" style="width: ${c.percentage}%"></div>
+              </div>
+            </div>
+          `).join('');
+        }
+
+        // Top merchants list
+        const merContainer = document.getElementById('merchantList');
+        if (merchants.length === 0) {
+          merContainer.innerHTML = '<p class="text-xs text-slate-500 italic py-2">No merchant data yet.</p>';
+        } else {
+          merContainer.innerHTML = merchants.map(m => `
+            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-950/40 border border-slate-800/80">
+              <span class="text-xs font-medium text-slate-300">${m.merchant}</span>
+              <div class="text-right">
+                <span class="text-xs font-mono font-semibold text-emerald-400">₹${m.total_spent.toLocaleString('en-IN')}</span>
+                <span class="text-[10px] text-slate-500 ml-1">(${m.count})</span>
+              </div>
+            </div>
+          `).join('');
+        }
+
+      } catch (err) {
+        console.error("Failed to load analytics:", err);
+      }
+    }
+
+    async function loadTransactions() {
+      try {
+        const res = await fetch('/transactions');
+        const data = await res.json();
+        const txns = data.transactions || [];
+        const tbody = document.getElementById('txnTableBody');
+
+        if (txns.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-slate-500 font-sans">No transactions recorded yet.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = txns.map(t => `
+          <tr class="hover:bg-slate-800/40 transition">
+            <td class="py-2.5 text-slate-500">#${t.id}</td>
+            <td class="py-2.5 font-medium text-white">${t.merchant}</td>
+            <td class="py-2.5"><span class="px-2 py-0.5 rounded-full text-[10px] bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">${t.category}</span></td>
+            <td class="py-2.5 text-slate-400 font-sans">${t.transaction_date}</td>
+            <td class="py-2.5 text-right font-semibold text-emerald-400">₹${t.amount.toFixed(2)}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error("Failed to load transactions:", err);
+      }
+    }
+
+    async function loadBudgets() {
+      try {
+        const res = await fetch('/budgets');
+        const budgets = await res.json();
+        const grid = document.getElementById('budgetGrid');
+
+        if (!budgets || budgets.length === 0) {
+          grid.innerHTML = '<div class="text-slate-500 text-xs italic py-2">No budgets configured yet.</div>';
+          return;
+        }
+
+        grid.innerHTML = budgets.map(b => `
+          <div class="p-3 rounded-xl border border-slate-800 bg-slate-950/60 flex items-center justify-between">
+            <div>
+              <p class="font-medium text-white">${b.category}</p>
+              <p class="text-[11px] text-slate-400 font-mono">${b.month_year}</p>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-slate-500">Limit</p>
+              <p class="text-sm font-semibold text-violet-400 font-mono">₹${b.monthly_limit.toLocaleString('en-IN')}</p>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error("Failed to load budgets:", err);
+      }
+    }
+
+    function refreshAll() {
+      loadAnalytics();
+      loadTransactions();
+      loadBudgets();
+    }
+
+    document.getElementById('txnForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        account_id: parseInt(document.getElementById('txnAccountId').value),
+        amount: parseFloat(document.getElementById('txnAmount').value),
+        merchant: document.getElementById('txnMerchant').value,
+        category: document.getElementById('txnCategory').value,
+        transaction_date: document.getElementById('txnDate').value
+      };
+
+      const res = await fetch('/transactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        document.getElementById('txnAmount').value = '';
+        document.getElementById('txnMerchant').value = '';
+        refreshAll();
+      }
+    });
+
+    document.getElementById('budgetForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        account_id: parseInt(document.getElementById('budAccountId').value),
+        category: document.getElementById('budCategory').value,
+        monthly_limit: parseFloat(document.getElementById('budLimit').value),
+        month_year: document.getElementById('budMonthYear').value
+      };
+
+      const res = await fetch('/budgets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        document.getElementById('budLimit').value = '';
+        refreshAll();
+      }
+    });
+
+    refreshAll();
+  </script>
+</body>
+</html>

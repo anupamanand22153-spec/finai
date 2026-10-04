@@ -91,3 +91,48 @@ async def test_invalid_budget_month_format():
         }
         response = await client.post("/budgets", json=payload)
         assert response.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_analytics_endpoints():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        # Seed 2 transactions
+        await client.post("/transactions", json={
+            "account_id": 1,
+            "amount": 2000.0,
+            "merchant": "Amazon",
+            "category": "Shopping",
+            "transaction_date": "2026-10-01"
+        })
+        await client.post("/transactions", json={
+            "account_id": 1,
+            "amount": 1000.0,
+            "merchant": "Swiggy",
+            "category": "Food",
+            "transaction_date": "2026-10-02"
+        })
+
+        # Test summary
+        res_summary = await client.get("/analytics/summary")
+        assert res_summary.status_code == 200
+        summary_data = res_summary.json()
+        assert summary_data["total_spent"] == 3000.0
+        assert summary_data["transaction_count"] == 2
+        assert summary_data["average_transaction"] == 1500.0
+
+        # Test category breakdown
+        res_cat = await client.get("/analytics/categories")
+        assert res_cat.status_code == 200
+        cats = res_cat.json()
+        assert len(cats) == 2
+        # Amazon Shopping (2000 / 3000 = 66.67%)
+        assert cats[0]["category"] == "Shopping"
+        assert cats[0]["percentage"] == 66.67
+
+        # Test top merchants
+        res_merchants = await client.get("/analytics/merchants")
+        assert res_merchants.status_code == 200
+        merchants = res_merchants.json()
+        assert merchants[0]["merchant"] == "Amazon"
+        assert merchants[0]["total_spent"] == 2000.0

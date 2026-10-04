@@ -40,3 +40,22 @@ class BudgetResponse(BaseModel):
     created_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+
+    # --- Analytics Schemas ---
+class SpendSummaryResponse(BaseModel):
+    total_spent: float
+    transaction_count: int
+    average_transaction: float
+
+class CategoryBreakdownItem(BaseModel):
+    category: str
+    total_spent: float
+    percentage: float
+    count: int
+
+class MerchantSpendItem(BaseModel):
+    merchant: str
+    total_spent: float
+    count: int
