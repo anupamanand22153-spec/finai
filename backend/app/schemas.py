@@ -1,39 +1,42 @@
-from datetime import date
-from decimal import Decimal
-from typing import Optional
-from pydantic import BaseModel, Field
-
+from pydantic import BaseModel, Field, ConfigDict
+from datetime import date, datetime
+from typing import List
 
 class TransactionCreate(BaseModel):
-    account_id: int = Field(
-        default=1, description="Foreign key ID linking to the account"
-    )
-    amount: Decimal = Field(
-        ..., gt=0, description="Amount must be greater than 0"
-    )
-    merchant: str = Field(
-        ...,
-        min_length=2,
-        max_length=100,
-        description="Store or service name",
-    )
-    category: str = Field(
-        ..., min_length=2, max_length=50, description="Spending category"
-    )
-    transaction_date: date = Field(..., description="Date of transaction")
-    description: Optional[str] = Field(
-        None, max_length=255, description="Optional notes"
-    )
-
+    account_id: int
+    amount: float = Field(..., gt=0, description="Amount must be strictly positive")
+    merchant: str = Field(..., min_length=1, max_length=100)
+    category: str = Field(..., min_length=1, max_length=50)
+    transaction_date: date
 
 class TransactionResponse(BaseModel):
     id: int
     account_id: int
-    amount: Decimal
+    amount: float
     merchant: str
     category: str
     transaction_date: date
-    description: Optional[str] = None
+    created_at: datetime | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
+class TransactionListResponse(BaseModel):
+    count: int
+    transactions: List[TransactionResponse]
+
+# --- Budget Schemas ---
+class BudgetCreate(BaseModel):
+    account_id: int
+    category: str = Field(..., min_length=1, max_length=50)
+    monthly_limit: float = Field(..., gt=0, description="Budget limit must be positive")
+    month_year: str = Field(..., pattern=r"^\d{4}-(0[1-9]|1[0-2])$", description="Format: YYYY-MM")
+
+class BudgetResponse(BaseModel):
+    id: int
+    account_id: int
+    category: str
+    monthly_limit: float
+    month_year: str
+    created_at: datetime | None = None
+
+    model_config = ConfigDict(from_attributes=True)
